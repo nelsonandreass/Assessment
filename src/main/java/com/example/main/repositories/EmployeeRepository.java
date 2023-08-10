@@ -12,14 +12,15 @@ import com.example.main.models.Employee;
 
 public interface EmployeeRepository extends JpaRepository<Employee, String>{
 	
-	 public Employee findByid(BigInteger id);
+	public Employee findByid(BigInteger id);
 	 
-	@Query("SELECT NEW MAP(e.name as name , c.categoryDescription as Grade) FROM Employee e "
+	@Query("SELECT NEW MAP(e.id as id, e.name as name, e.salary as salary , CONCAT(c.categoryCode,':',c.categoryDescription) as gradeCode, (e.salary * c.bonus) + e.salary as bonus)"
+			+ "FROM Employee e "
 			+ "INNER JOIN Category c on e.category= c.categoryCode where e.id=:param")
-	public List<LinkedHashMap<String, Object>> FindByidJoin(  @Param("param") String id);
+	public LinkedHashMap<String, Object> FindByidWithJoin(  @Param("param") BigInteger id);
 	 
 	
-	@Query("SELECT NEW MAP(e.id as ID, e.name as name, e.salary as Salary , CONCAT(c.categoryCode,':',c.categoryDescription) as GradeCode, (e.salary * c.bonus) + e.salary as Bonus)"
+	@Query("SELECT NEW MAP(e.id as id, e.name as name, e.salary as salary , CONCAT(c.categoryCode,':',c.categoryDescription) as gradeCode, (e.salary * c.bonus) + e.salary as bonus)"
 			+ "FROM Employee e "
 			+ "INNER JOIN Category c on e.category= c.categoryCode")
 	public List<LinkedHashMap<String, Object>> FindAllWithJoin();

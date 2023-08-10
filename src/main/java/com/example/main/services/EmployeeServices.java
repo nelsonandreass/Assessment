@@ -35,8 +35,27 @@ public class EmployeeServices {
         return emp;
     }
 	
+	public LinkedHashMap<String,Object> FindByidWithJoin(BigInteger id){
+		LinkedHashMap<String,Object> emp = employeeRepo.FindByidWithJoin(id);
+		String formattedValue = String.format("%.0f", emp.get("bonus"));
+		BigInteger integerValue = new BigInteger(formattedValue);
+		emp.put("bonus", integerValue);
+        return emp;
+    }
+	
 	public List<LinkedHashMap<String,Object>> findAllWithJoin(){
         List<LinkedHashMap<String,Object>> emp = employeeRepo.FindAllWithJoin();
+        for(LinkedHashMap<String,Object> row :emp) {
+        	for(Map.Entry<String, Object> entry : row.entrySet() ) {
+        		if( entry.getKey().toString().equalsIgnoreCase("bonus")) {
+        			String formattedValue = String.format("%.0f", entry.getValue());
+        			BigInteger integerValue = new BigInteger(formattedValue);
+        			entry.setValue(integerValue);
+        		}
+        	}
+        }
         return emp;
    }
+
+	
 }

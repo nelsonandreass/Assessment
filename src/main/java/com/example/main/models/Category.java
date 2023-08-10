@@ -15,11 +15,17 @@ public class Category {
 	
 	@Id
 	private String id = UUID.randomUUID().toString();
-	//@OneToMany(mappedBy = "cateogry")
-	//private List<Employee> employees;
 	private int categoryCode;
 	private String categoryDescription;
 	private float bonus;
+	
+	public Category() {}
+	
+	public Category(int code, String desc, float bonus) {
+		this.categoryCode = code;
+		this.categoryDescription = desc;
+		this.bonus = bonus;
+	}
 	
 	public String getId() {
 		return id;
@@ -33,13 +39,6 @@ public class Category {
 	public void setCategoryCode(int categoryCode) {
 		this.categoryCode = categoryCode;
 	}
-//	
-//	public List<Employee> getEmployees() {
-//		return employees;
-//	}
-//	public void setEmployees(List<Employee> employees) {
-//		this.employees = employees;
-//	}
 	public String getCategoryDescription() {
 		return categoryDescription;
 	}

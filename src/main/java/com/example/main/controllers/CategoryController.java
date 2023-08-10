@@ -1,10 +1,12 @@
 package com.example.main.controllers;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.main.models.Category;
+import com.example.main.models.Employee;
 //import com.sgo.hsbcproject.models.Users;
 //import com.sgo.hsbcproject.models.pojo.AjaxResponseBody;
 //import com.sgo.hsbcproject.services.EmployeeServices;
@@ -29,37 +32,47 @@ public class CategoryController {
 	@Autowired
 	private CategoryService catService = new CategoryService();
 	
+	private AjaxResponseBody response = new AjaxResponseBody();	
+	
+	private HttpStatus status;
+	private void setResponse(Object obj, String status , boolean success) {
+		response.setResult(obj);
+		response.setMsg(status);
+		response.setSuccess(success);
+	}
+	
 	@PostMapping(value = "/category/save")
 	public ResponseEntity<AjaxResponseBody> save(@RequestBody LinkedHashMap<String,Object> dataJson){
 		Category cat= mapper.convertValue(dataJson, Category.class);
-		catService.saveOne(cat);
-		AjaxResponseBody response = new AjaxResponseBody();	
-		response.setResult(cat);
-		response.setMsg("Success");
-		response.setSuccess(true);
-		return new ResponseEntity<AjaxResponseBody>(response,HttpStatus.OK);
+		Category check = catService.findByCategoryCode((int)dataJson.get("categoryCode"));
+		if(check == null) {
+			catService.saveOne(cat);
+			setResponse(cat, "Success", true);
+			status = HttpStatus.OK;
+		}else {
+			setResponse(new ArrayList<Employee>(), "Data has been registered", false);
+			status = HttpStatus.BAD_REQUEST;
+		}
+		return new ResponseEntity<AjaxResponseBody>(response,status);
 	}
 	
 	@GetMapping(value = "/category")
 	public ResponseEntity<AjaxResponseBody> findAll() {
 		List<Category> listCat= catService.findAll();
-		AjaxResponseBody response = new AjaxResponseBody();	
-		response.setResult(listCat);
-		response.setMsg("Success");
-		response.setSuccess(true);
-		return new ResponseEntity<AjaxResponseBody>(response , HttpStatus.OK);
+		setResponse(listCat, "Success", true);
+		status = HttpStatus.OK;
+		return new ResponseEntity<AjaxResponseBody>(response , status);
 	}
 	
-//	@PostMapping(value = "/update")
-//    public ResponseEntity<AjaxResponseBody> updateByid(@RequestBody LinkedHashMap<String,Object> dataJson){
-//        Employee emp= empService.findById(dataJson.get("id").toString());
-//        emp.setAddress(dataJson.get("address").toString());
-//        emp.setCategory((int)dataJson.get("category"));
-//        emp.setName(dataJson.get("name").toString());
-//        AjaxResponseBody response = new AjaxResponseBody();	
-//        response.setResult(emp);
-//        response.setMsg("Success");
-//        response.setSuccess(true);
-//        return new ResponseEntity<AjaxResponseBody>(response,HttpStatus.OK);
-//    }
+	@PostMapping(value = "/category/update")
+	public ResponseEntity<AjaxResponseBody> update(@RequestBody LinkedHashMap<String,Object> dataJson){
+		Category cat = catService.findByCategoryCode(Integer.parseInt(dataJson.get("categoryCode").toString()));
+		cat.setBonus(Float.parseFloat(dataJson.get("bonus").toString()));
+		cat.setCategoryDescription(dataJson.get("categoryDescription").toString());
+		catService.saveOne(cat);
+		setResponse(cat, "Success", true);
+		status = HttpStatus.OK;
+		return new ResponseEntity<AjaxResponseBody>(response , status);
+	}
+	
 }

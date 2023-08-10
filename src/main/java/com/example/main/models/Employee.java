@@ -4,6 +4,7 @@ package com.example.main.models;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 
@@ -28,6 +29,15 @@ public class Employee {
 	private int category;
 	private BigInteger salary;
 
+	public Employee() {}
+	public Employee(String string, int i, BigInteger j) {
+		// TODO Auto-generated constructor stub
+		Random random = new Random();
+		this.id = new BigInteger(String.valueOf(random.nextInt())) ; 
+		this.name = string;
+		this.category = i;
+		this.salary = j;
+	}
 	public BigInteger getSalary() {
 		return salary;
 	}
